@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Database.Entities;
 using Database.Interfaces;
+using Microsoft.Extensions.Configuration;
 using UrlShortener.Utilities;
 
 namespace UrlShortener.Services
@@ -9,10 +10,14 @@ namespace UrlShortener.Services
     public class UrlService : IUrlService
     {
         private readonly IUrlRepository _urlRepository;
+        private readonly GenerateShortenedUrl _generateShortenedUrl;
+        private readonly string _baseUrl;
 
-        public UrlService(IUrlRepository urlRepository)
+        public UrlService(IUrlRepository urlRepository, GenerateShortenedUrl generateShortenedUrl, IConfiguration config)
         {
             _urlRepository = urlRepository ?? throw new ArgumentNullException(nameof(urlRepository));
+            _generateShortenedUrl = generateShortenedUrl ?? throw new ArgumentNullException(nameof(generateShortenedUrl));
+            _baseUrl = config.GetValue<string>("BaseUrl") ?? throw new NullReferenceException(nameof(_baseUrl));
         }
 
         /// <summary>
@@ -36,7 +41,7 @@ namespace UrlShortener.Services
                 return _urlRepository.GetByOriginalUrl(url).ShortenedUrl;
             }
 
-            var shortenedUrl = GenerateShortenedUrl.CreateUrl(url);
+            var shortenedUrl = _generateShortenedUrl.CreateUrl();
 
             var urlToAdd = new Url
             {
@@ -46,7 +51,7 @@ namespace UrlShortener.Services
             };
 
             var createdUrl = await _urlRepository.AddAsync(urlToAdd);
-            return createdUrl.ShortenedUrl;
+            return $@"{_baseUrl}\{createdUrl.ShortenedUrl}";
         }
 
         /// <summary>

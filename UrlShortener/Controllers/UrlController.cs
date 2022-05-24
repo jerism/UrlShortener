@@ -20,13 +20,5 @@ namespace UrlShortener.Controllers
             var result = await _urlService.CreateUrlAsync(url);
             return new OkObjectResult(result);
         }
-
-        [HttpGet]
-        [Route("originalUrl")]
-        public async Task<IActionResult> RouteToOriginalUrl([FromQuery] string url)
-        {
-            var result = _urlService.GetUrl(url);
-            return new OkObjectResult(result);
-        }
     }
 }

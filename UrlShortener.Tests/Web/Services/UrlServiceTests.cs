@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Database.Entities;
 using Database.Interfaces;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using NUnit.Framework;
 using UrlShortener.Services;
+using UrlShortener.Utilities;
 
 namespace UrlShortener.Tests.Web.Services
 {
@@ -14,12 +17,23 @@ namespace UrlShortener.Tests.Web.Services
     {
         private IUrlService _sut;
         private Mock<IUrlRepository> _mockUrlRepository;
+        private GenerateShortenedUrl _mockGenerateShortenedUrl;
 
         [SetUp]
         public void SetUp()
         {
+            var inMemorySettings = new Dictionary<string, string> {
+                { "BaseUrl", "test.com" },
+                { "BaseCharacters", "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" }
+            };
+
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(inMemorySettings)
+                .Build();
+
             _mockUrlRepository = new Mock<IUrlRepository>();
-            _sut = new UrlService(_mockUrlRepository.Object);
+            var generateShortenedUrl = new GenerateShortenedUrl(configuration);
+            _sut = new UrlService(_mockUrlRepository.Object, generateShortenedUrl, configuration);
         }
 
         [Test]
@@ -116,7 +130,8 @@ namespace UrlShortener.Tests.Web.Services
             var result = await _sut.CreateUrlAsync("test.com");
 
             result.Should().NotBeNull();
-            result.Should().Be("abc");
+            result.Should().Be(@"test.com\abc");
+
             _mockUrlRepository.Verify(s => s.GetByOriginalUrl("test.com"), Times.Never);
             _mockUrlRepository.Verify(s => s.AddAsync(It.IsAny<Url>()), Times.Once);
         }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UrlShortener.Services;
+using UrlShortener.Utilities;
 
 namespace UrlShortener
 {
@@ -32,6 +33,7 @@ namespace UrlShortener
             services.AddRazorPages();
             services.AddTransient<IUrlService, UrlService>();
             services.AddTransient<IUrlRepository, UrlRepository>();
+            services.AddTransient<GenerateShortenedUrl, GenerateShortenedUrl>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
