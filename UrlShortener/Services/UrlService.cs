@@ -20,20 +20,11 @@ namespace UrlShortener.Services
             _baseUrl = config.GetValue<string>("BaseUrl") ?? throw new NullReferenceException(nameof(_baseUrl));
         }
 
-        /// <summary>
-        /// Check if the url already has a shortened url
-        /// </summary>
-        /// <param name="url">Original Url</param>
         public bool CheckUrlExists(string url)
         {
             return _urlRepository.Exists(url);
         }
 
-        /// <summary>
-        /// Create a new shortened url and save
-        /// </summary>
-        /// <param name="url">Original url</param>
-        /// <returns>Shortened Url</returns>
         public async Task<string> CreateUrlAsync(string url)
         {
             if (CheckUrlExists(url))
@@ -54,11 +45,6 @@ namespace UrlShortener.Services
             return $@"{_baseUrl}\{createdUrl.ShortenedUrl}";
         }
 
-        /// <summary>
-        /// Retrieve the original url for a given short url
-        /// </summary>
-        /// <param name="url">Shortened url</param>
-        /// <returns></returns>
         public string GetUrl(string url)
         {
             var originalUrl = string.Empty;
@@ -78,12 +64,6 @@ namespace UrlShortener.Services
             return originalUrl;
         }
 
-        /// <summary>
-        /// Validate the original url to ensure its a valid url
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         public bool ValidateUrl(string url)
         {
             throw new System.NotImplementedException();
