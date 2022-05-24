@@ -70,28 +70,28 @@ namespace UrlShortener.Tests.Web.Services
             var url = new Url
             {
                 OriginalUrl = "test.com",
-                ShortenedUrl = "abc",
+                UniqueIdentifier = "abcdef",
             };
 
-            _mockUrlRepository.Setup(s => s.GetByShortenedUrl("abc")).Returns(url);
+            _mockUrlRepository.Setup(s => s.GetByUniqueIdentifier("abcdef")).Returns(url);
 
-            var result = _sut.GetUrl("abc");
+            var result = _sut.GetUrl("abcdef");
 
             result.Should().NotBeNull();
             result.Should().Be("test.com");
-            _mockUrlRepository.Verify(s => s.GetByShortenedUrl("abc"), Times.Once);
+            _mockUrlRepository.Verify(s => s.GetByUniqueIdentifier("abcdef"), Times.Once);
         }
 
         [Test]
         public void GetUrl_WithoutExistingUrl_ShouldReturnStringEmpty()
         {
-            _mockUrlRepository.Setup(s => s.GetByShortenedUrl(It.IsAny<string>())).Throws<Exception>();
+            _mockUrlRepository.Setup(s => s.GetByUniqueIdentifier(It.IsAny<string>())).Throws<Exception>();
 
             var result = _sut.GetUrl("test.com");
 
             result.Should().BeNullOrEmpty();
 
-            _mockUrlRepository.Verify(s => s.GetByShortenedUrl("test.com"), Times.Once);
+            _mockUrlRepository.Verify(s => s.GetByUniqueIdentifier("test.com"), Times.Once);
         }
 
         [Test]
@@ -100,7 +100,7 @@ namespace UrlShortener.Tests.Web.Services
             var url = new Url
             {
                 OriginalUrl = "test.com",
-                ShortenedUrl = "abc",
+                UniqueIdentifier = "abc",
             };
 
             _mockUrlRepository.Setup(s => s.Exists("test.com")).Returns(true);
@@ -120,7 +120,7 @@ namespace UrlShortener.Tests.Web.Services
             var url = new Url
             {
                 OriginalUrl = "test.com",
-                ShortenedUrl = "abc",
+                UniqueIdentifier = "abc",
             };
 
             _mockUrlRepository.Setup(s => s.Exists("test.com")).Returns(false);

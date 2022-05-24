@@ -13,23 +13,23 @@ namespace UrlShortener.Services
         bool ValidateUrl(string url);
 
         /// <summary>
-        /// Check if the url already has a shortened url
+        /// Check if the url already has a unqiue identifier
         /// </summary>
         /// <param name="url">Original Url</param>
         bool CheckUrlExists(string url);
 
         /// <summary>
-        /// Create a new shortened url and save
+        /// Create a new unqiue identifier and save
         /// </summary>
         /// <param name="url">Original url</param>
-        /// <returns>Shortened Url</returns>
+        /// <returns>Unqiue identifier</returns>
         Task<string> CreateUrlAsync(string url);
 
         /// <summary>
-        /// Retrieve the original url for a given short url
+        /// Retrieve the original url for a given unqiue identifier
         /// </summary>
-        /// <param name="url">Shortened url</param>
+        /// <param name="uid">Unique Identifier</param>
         /// <returns>Original Url</returns>
-        string GetUrl(string url);
+        string GetUrl(string uid);
     }
 }

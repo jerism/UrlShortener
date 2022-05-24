@@ -42,6 +42,11 @@ namespace Database.Repositories
             return _context.Urls.Any(u => u.OriginalUrl == originalUrl);
         }
 
+        public bool UniqueIdentiferExists(string uniqueIdentifer)
+        {
+            return _context.Urls.Any(u => u.UniqueIdentifier == uniqueIdentifer);
+        }
+
         public Url GetByOriginalUrl(string originalUrl)
         {
             var url = _context.Urls.SingleOrDefault(u => u.OriginalUrl == originalUrl);
@@ -54,13 +59,13 @@ namespace Database.Repositories
             return url;
         }
 
-        public Url GetByShortenedUrl(string shortenedUrl)
+        public Url GetByUniqueIdentifier(string uniqueIdenifier)
         {
-            var url = _context.Urls.SingleOrDefault(u => u.ShortenedUrl == shortenedUrl);
+            var url = _context.Urls.SingleOrDefault(u => u.UniqueIdentifier == uniqueIdenifier);
 
             if (url == null)
             {
-                throw new Exception($"No url could be found with shortened url {shortenedUrl}");
+                throw new Exception($"No url could be found with unqiue identifier: '{uniqueIdenifier}'");
             }
 
             return url;

@@ -11,8 +11,8 @@ namespace Database.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string OriginalUrl { get; set; }
-        [MaxLength(30)]
-        public string ShortenedUrl { get; set; }
+        [MaxLength(6)]
+        public string UniqueIdentifier { get; set; }
         public DateTime? LastAccessed { get; set; }
     }
 }

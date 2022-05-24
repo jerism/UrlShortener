@@ -29,32 +29,29 @@ namespace UrlShortener.Services
         {
             if (CheckUrlExists(url))
             {
-                return _urlRepository.GetByOriginalUrl(url).ShortenedUrl;
+                return _urlRepository.GetByOriginalUrl(url).UniqueIdentifier;
             }
 
-            var shortenedUrl = _generateShortenedUrl.CreateUrl();
+            var uid = _generateShortenedUrl.CreateUrl();
 
             var urlToAdd = new Url
             {
                 OriginalUrl = url,
-                ShortenedUrl = shortenedUrl,
+                UniqueIdentifier = uid,
                 LastAccessed = DateTime.Now
             };
 
             var createdUrl = await _urlRepository.AddAsync(urlToAdd);
-            return $@"{_baseUrl}\{createdUrl.ShortenedUrl}";
+            return $@"{_baseUrl}\{createdUrl.UniqueIdentifier}";
         }
 
-        public string GetUrl(string url)
+        public string GetUrl(string uid)
         {
             var originalUrl = string.Empty;
 
-            // TODO implement validation
-            if (url.StartsWith("www.test.com")) { }
-
             try
             {
-                originalUrl = _urlRepository.GetByShortenedUrl(url).OriginalUrl;
+                originalUrl = _urlRepository.GetByUniqueIdentifier(uid).OriginalUrl;
             }
             catch (Exception ex)
             {

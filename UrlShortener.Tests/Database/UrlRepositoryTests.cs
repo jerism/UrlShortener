@@ -38,7 +38,7 @@ namespace UrlShortener.Tests.Database
             var url = new Url
             {
                 OriginalUrl = "originalUrl.com/qwerty",
-                ShortenedUrl = "tinyUrl.com/123456",
+                UniqueIdentifier = "123456",
                 LastAccessed = DateTime.Now
             };
 
@@ -71,9 +71,9 @@ namespace UrlShortener.Tests.Database
         [Test]
         public void GetByShortenedUrl_WhenShortenedUrlExists_ShouldReturnOriginalUrl()
         {
-            var shortenedUrl = "tinyUrl.com/1";
+            var shortenedUrl = "abcde1";
 
-            var result = _sut.GetByShortenedUrl(shortenedUrl);
+            var result = _sut.GetByUniqueIdentifier(shortenedUrl);
 
             result.Should().NotBeNull();
             result.OriginalUrl.Should().BeEquivalentTo("originalUrl.com/abc1");
@@ -82,9 +82,9 @@ namespace UrlShortener.Tests.Database
         [Test]
         public void GetByShortenedUrl_WhenNoShortenedUrlExists_ShouldThrowException()
         {
-            var shortenedUrl = "tinyUrl.com/404";
+            var shortenedUrl = "404";
 
-            _sut.Invoking(_ => _.GetByShortenedUrl(shortenedUrl))
+            _sut.Invoking(_ => _.GetByUniqueIdentifier(shortenedUrl))
                 .Should().Throw<Exception>();
         }
 
@@ -94,6 +94,26 @@ namespace UrlShortener.Tests.Database
             var originalUrl = "originalUrl.com/abc1";
 
             var result = _sut.Exists(originalUrl);
+
+            result.Should().BeTrue();
+        }
+
+        [Test]
+        public void UniqueIdentiferExists_WhenNoUniqueIdExists_ShouldReturnFalse()
+        {
+            var uniqueId = "zzzzzz";
+
+            var result = _sut.UniqueIdentiferExists(uniqueId);
+
+            result.Should().BeFalse();
+        }
+
+        [Test]
+        public void UniqueIdentiferExists_WhenUniqueIdExists_ShouldReturnTrue()
+        {
+            var uniqueId = "abcde1";
+
+            var result = _sut.UniqueIdentiferExists(uniqueId);
 
             result.Should().BeTrue();
         }
@@ -142,7 +162,7 @@ namespace UrlShortener.Tests.Database
                 {
                     Id = i,
                     OriginalUrl = $"originalUrl.com/abc{i}",
-                    ShortenedUrl = $"tinyUrl.com/{i}",
+                    UniqueIdentifier = $"abcde{i}",
                     LastAccessed = DateTime.Now
                 };
 
