@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Database.Interfaces;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Moq;
 using NUnit.Framework;
 using UrlShortener.Utilities;
 
@@ -10,6 +12,7 @@ namespace UrlShortener.Tests.Web.Utilities
     public class GenerateShortenedUrlTests
     {
         private GenerateShortenedUrl _sut;
+        private Mock<IUrlRepository> _mockUrlRepository;
 
         [SetUp]
         public void SetUp()
@@ -22,7 +25,8 @@ namespace UrlShortener.Tests.Web.Utilities
                 .AddInMemoryCollection(inMemorySettings)
                 .Build();
 
-            _sut = new GenerateShortenedUrl(configuration);
+            _mockUrlRepository = new Mock<IUrlRepository>();
+            _sut = new GenerateShortenedUrl(configuration, _mockUrlRepository.Object);
         }
 
         [Test]

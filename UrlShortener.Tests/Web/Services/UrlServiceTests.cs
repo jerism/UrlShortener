@@ -32,7 +32,7 @@ namespace UrlShortener.Tests.Web.Services
                 .Build();
 
             _mockUrlRepository = new Mock<IUrlRepository>();
-            var generateShortenedUrl = new GenerateShortenedUrl(configuration);
+            var generateShortenedUrl = new GenerateShortenedUrl(configuration, _mockUrlRepository.Object);
             _sut = new UrlService(_mockUrlRepository.Object, generateShortenedUrl, configuration);
         }
 
