@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Database.Entities
@@ -13,6 +12,5 @@ namespace Database.Entities
         public string OriginalUrl { get; set; }
         [MaxLength(6)]
         public string UniqueIdentifier { get; set; }
-        public DateTime? LastAccessed { get; set; }
     }
 }

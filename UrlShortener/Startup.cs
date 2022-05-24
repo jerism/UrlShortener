@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Database;
 using Database.Interfaces;
 using Database.Repositories;
@@ -59,11 +60,13 @@ namespace UrlShortener
 
             app.UseEndpoints(endpoints =>
             {
-                // endpoints.MapRazorPages();
-                endpoints.MapControllers();
+                endpoints.MapDefaultControllerRoute();
 
+                endpoints.MapGet("/", context =>
+                {
+                    return Task.Run(() => context.Response.Redirect("/Home/Index"));
+                });
             });
-
 
             // Apply migrations to DB
             var scopeFactory = app.ApplicationServices.GetService<IServiceScopeFactory>();

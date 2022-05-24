@@ -109,7 +109,7 @@ namespace UrlShortener.Tests.Web.Services
             var result = await _sut.CreateUrlAsync("test.com");
 
             result.Should().NotBeNull();
-            result.Should().Be("abc");
+            result.Should().Be("test.com/abc");
             _mockUrlRepository.Verify(s => s.GetByOriginalUrl("test.com"), Times.Once);
             _mockUrlRepository.Verify(s => s.AddAsync(It.IsAny<Url>()), Times.Never);
         }
@@ -130,7 +130,7 @@ namespace UrlShortener.Tests.Web.Services
             var result = await _sut.CreateUrlAsync("test.com");
 
             result.Should().NotBeNull();
-            result.Should().Be(@"test.com\abc");
+            result.Should().Be("test.com/abc");
 
             _mockUrlRepository.Verify(s => s.GetByOriginalUrl("test.com"), Times.Never);
             _mockUrlRepository.Verify(s => s.AddAsync(It.IsAny<Url>()), Times.Once);

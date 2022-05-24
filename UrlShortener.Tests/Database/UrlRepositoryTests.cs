@@ -38,8 +38,7 @@ namespace UrlShortener.Tests.Database
             var url = new Url
             {
                 OriginalUrl = "originalUrl.com/qwerty",
-                UniqueIdentifier = "123456",
-                LastAccessed = DateTime.Now
+                UniqueIdentifier = "123456"
             };
 
             var result = await _sut.AddAsync(url);
@@ -162,8 +161,7 @@ namespace UrlShortener.Tests.Database
                 {
                     Id = i,
                     OriginalUrl = $"originalUrl.com/abc{i}",
-                    UniqueIdentifier = $"abcde{i}",
-                    LastAccessed = DateTime.Now
+                    UniqueIdentifier = $"abcde{i}"
                 };
 
                 await context.Urls.AddAsync(url);

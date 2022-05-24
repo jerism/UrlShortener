@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Services;
 
 namespace UrlShortener.Controllers
@@ -15,10 +14,17 @@ namespace UrlShortener.Controllers
 
         [HttpGet]
         [Route("/{uniqueIdentifer}")]
-        public async Task<IActionResult> RouteToOriginalUrl(string uniqueIdentifer)
+        public IActionResult RouteToOriginalUrl(string uniqueIdentifer)
         {
             var result = _urlService.GetUrl(uniqueIdentifer);
-            return new OkObjectResult(result);
+
+            if (string.IsNullOrEmpty(result))
+            {
+                ViewBag.Error = $"Could not find matching link for unique identifer '{uniqueIdentifer}' please check the url.";
+                return View("Error");
+            }
+
+            return new RedirectResult(result);
         }
     }
 }

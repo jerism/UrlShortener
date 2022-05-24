@@ -27,22 +27,24 @@ namespace UrlShortener.Services
 
         public async Task<string> CreateUrlAsync(string url)
         {
+            string uid;
+
             if (CheckUrlExists(url))
             {
-                return _urlRepository.GetByOriginalUrl(url).UniqueIdentifier;
+                uid = _urlRepository.GetByOriginalUrl(url).UniqueIdentifier;
+                return $"{_baseUrl}/{uid}";
             }
 
-            var uid = _generateShortenedUrl.CreateUrl();
+            uid = _generateShortenedUrl.CreateUrl();
 
             var urlToAdd = new Url
             {
                 OriginalUrl = url,
-                UniqueIdentifier = uid,
-                LastAccessed = DateTime.Now
+                UniqueIdentifier = uid
             };
 
             var createdUrl = await _urlRepository.AddAsync(urlToAdd);
-            return $@"{_baseUrl}\{createdUrl.UniqueIdentifier}";
+            return $"{_baseUrl}/{createdUrl.UniqueIdentifier}";
         }
 
         public string GetUrl(string uid)
@@ -63,7 +65,12 @@ namespace UrlShortener.Services
 
         public bool ValidateUrl(string url)
         {
-            throw new System.NotImplementedException();
+            if (!url.StartsWith("http://") && !url.StartsWith("https://"))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

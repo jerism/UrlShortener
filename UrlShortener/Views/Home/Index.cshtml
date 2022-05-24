@@ -1,0 +1,41 @@
+﻿@page
+@model IndexModel
+
+<div class="text-left">
+    <pre>
+This site is designed to help you minify those long urls. 
+Whether its the twitter word count thats affecting you, or you just want to disguise your link, this is the site for you.
+The process is very simply, just paste the link you want minified in the form below.
+You will then get a random minified link in return. This link will take you to the original url once viewed.
+    
+Url's must begin with https:// or http://
+    </pre>
+</div>
+
+<div>
+    <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Add">
+        <div class="form-group row">
+            <div class="col-sm-7">
+                <input type="url" class="form-control" id="txt-Url" name="url" placeholder="Please enter a Url...">
+            </div>
+            <div class="col-sm-2">
+                <input type="submit" value="Submit" class="btn btn-primary"/>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+@if (@ViewBag.Error != null)
+{
+    <div>
+        Error : @ViewBag.Error
+    </div>
+}
+
+@if (@ViewBag.MinifiedLink != null)
+{
+    <div>
+        Minified Link <a href="@ViewBag.MinifiedLink">@ViewBag.MinifiedLink</a>
+    </div>
+}
