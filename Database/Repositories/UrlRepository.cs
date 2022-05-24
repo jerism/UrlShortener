@@ -8,43 +8,43 @@ namespace Database.Repositories
 {
     public class UrlRepository : IUrlRepository
     {
-        private readonly UrlShortenerContext Context;
+        private readonly UrlShortenerContext _context;
 
         public UrlRepository(UrlShortenerContext context)
         {
-            Context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<Url> AddAsync(Url url)
         {
-            Context.Urls.Add(url);
-            await Context.SaveChangesAsync();
+            _context.Urls.Add(url);
+            await _context.SaveChangesAsync();
             return url;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var url = await Context.Urls.FindAsync(id);
+            var url = await _context.Urls.FindAsync(id);
 
             if (url == null)
             {
                 throw new Exception($"No url could be found with id {id}");
             }
 
-            Context.Urls.Remove(url);
-            await Context.SaveChangesAsync();
+            _context.Urls.Remove(url);
+            await _context.SaveChangesAsync();
 
             return true;
         }
 
         public bool Exists(string originalUrl)
         {
-            return Context.Urls.Any(u => u.OriginalUrl == originalUrl);
+            return _context.Urls.Any(u => u.OriginalUrl == originalUrl);
         }
 
         public Url GetByOriginalUrl(string originalUrl)
         {
-            var url = Context.Urls.SingleOrDefault(u => u.OriginalUrl == originalUrl);
+            var url = _context.Urls.SingleOrDefault(u => u.OriginalUrl == originalUrl);
 
             if (url == null)
             {
@@ -56,7 +56,7 @@ namespace Database.Repositories
 
         public Url GetByShortenedUrl(string shortenedUrl)
         {
-            var url = Context.Urls.SingleOrDefault(u => u.ShortenedUrl == shortenedUrl);
+            var url = _context.Urls.SingleOrDefault(u => u.ShortenedUrl == shortenedUrl);
 
             if (url == null)
             {

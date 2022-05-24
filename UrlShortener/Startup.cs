@@ -1,13 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
+using Database;
+using Database.Interfaces;
+using Database.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using UrlShortener.Services;
 
 namespace UrlShortener
 {
@@ -23,7 +25,13 @@ namespace UrlShortener
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var folder = Environment.SpecialFolder.LocalApplicationData;
+            var path = Environment.GetFolderPath(folder);
+            var databasePath = Path.Join(path, "urlshortener.db");
+            services.AddDbContext<UrlShortenerContext>(options => options.UseSqlite($"Data Source={databasePath}"));
             services.AddRazorPages();
+            services.AddTransient<IUrlService, UrlService>();
+            services.AddTransient<IUrlRepository, UrlRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,8 +57,22 @@ namespace UrlShortener
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                // endpoints.MapRazorPages();
+                endpoints.MapControllers();
+
             });
+
+
+            // Apply migrations to DB
+            var scopeFactory = app.ApplicationServices.GetService<IServiceScopeFactory>();
+
+            using var serviceScope = scopeFactory.CreateScope();
+            var context = serviceScope.ServiceProvider.GetRequiredService<UrlShortenerContext>();
+
+            if (context.Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+            {
+                context.Database.Migrate();
+            }
         }
     }
 }

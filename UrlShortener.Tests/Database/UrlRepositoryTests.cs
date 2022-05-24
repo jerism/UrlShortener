@@ -10,18 +10,26 @@ using NUnit.Framework;
 
 namespace UrlShortener.Tests.Database
 {
+    [TestFixture]
     public class UrlRepositoryTests
     {
         private IUrlRepository _sut;
+        private UrlShortenerContext _context;
 
-        [SetUp]
-        public async Task SetUp()
+        [OneTimeSetUp]
+        public async Task OneTimeSetUp()
         {
             var dbContextOptions = new DbContextOptionsBuilder<UrlShortenerContext>()
                 .UseInMemoryDatabase($"UrlShortenerDb_{DateTime.Now}")
                 .Options;
 
-            _sut = await CreateRepositoryAsync(dbContextOptions);
+            _context = new(dbContextOptions);
+        }
+
+        [SetUp]
+        public async Task SetUp()
+        {
+            _sut = await CreateRepositoryAsync(_context);
         }
 
         [Test]
@@ -56,9 +64,8 @@ namespace UrlShortener.Tests.Database
         {
             var originalUrl = "originalUrl.com/qwerty";
 
-            var result = _sut.GetByOriginalUrl(originalUrl);
-
-            // result.Should().Throw<Exception>();
+            _sut.Invoking(_ => _.GetByOriginalUrl(originalUrl))
+                    .Should().Throw<Exception>();
         }
 
         [Test]
@@ -75,11 +82,10 @@ namespace UrlShortener.Tests.Database
         [Test]
         public void GetByShortenedUrl_WhenNoShortenedUrlExists_ShouldThrowException()
         {
-            var shortenedUrl = "tinyUrl.com/1";
+            var shortenedUrl = "tinyUrl.com/404";
 
-            var result = _sut.GetByShortenedUrl(shortenedUrl);
-
-            // result.Should().Throw<Exception>();
+            _sut.Invoking(_ => _.GetByShortenedUrl(shortenedUrl))
+                .Should().Throw<Exception>();
         }
 
         [Test]
@@ -105,35 +111,36 @@ namespace UrlShortener.Tests.Database
         [Test]
         public async Task DeleteAsync_HappyPath_ShouldReturnTrue()
         {
-            var id = 1;
+            var id = 3;
             var result = await _sut.DeleteAsync(id);
 
             result.Should().BeTrue();
         }
 
         [Test]
-        public async Task DeleteAsync_WhenNoShortenedUrlExists_ShouldThrowException()
+        public void DeleteAsync_WhenNoShortenedUrlExists_ShouldThrowException()
         {
-            var id = 4;
-            var result = await _sut.DeleteAsync(id);
+            var id = 404;
 
-            //result.Should().Throw<Exception>();
+            _sut.Invoking(_ => _.DeleteAsync(id))
+                    .Should().Throw<Exception>();
         }
 
-        private async Task<IUrlRepository> CreateRepositoryAsync(DbContextOptions<UrlShortenerContext> dbContextOptions)
+        private static async Task<IUrlRepository> CreateRepositoryAsync(UrlShortenerContext context)
         {
-            UrlShortenerContext context = new UrlShortenerContext(dbContextOptions);
-            await PopulateDataAsync(context);
+            await SetUpData(context);
             return new UrlRepository(context);
         }
 
-        private static async Task PopulateDataAsync(UrlShortenerContext context)
+        private static async Task SetUpData(UrlShortenerContext context)
         {
-            for (var i = 1; i < 3; i++)
+            await context.Urls.ForEachAsync(url => context.Remove(url));
+
+            for (var i = 1; i < 4; i++)
             {
                 var url = new Url
                 {
-                    Id = 1,
+                    Id = i,
                     OriginalUrl = $"originalUrl.com/abc{i}",
                     ShortenedUrl = $"tinyUrl.com/{i}",
                     LastAccessed = DateTime.Now
